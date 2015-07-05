@@ -39,4 +39,10 @@ Close the editor and your done. From this moment cron will execute `rssr-pull` e
 Feeds
 -----
 
-Feeds are in `~/.rssr/feeds`. To add new feed, just open this file and write the feed url at a newline.
+Feeds are in `~/.rssr/feeds`.
+
+Adding a new feed is pretty simple:
+
+```sh
+echo FEED_URL >> ~/.rssr/feeds
+```
