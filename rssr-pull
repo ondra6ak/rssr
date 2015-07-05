@@ -1,0 +1,32 @@
+#! /usr/bin/python3
+
+import requests
+import rssr
+from os import chdir, environ
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-f", "--feeds", dest="feeds", metavar="FEEDS", help="file with individual urls", default=environ["HOME"] + "/.rssr/feeds")
+parser.add_argument("-q", "--quiet", dest="verbose", help="run in quiet mode", action="store_false", default=True)
+parser.add_argument("directory", nargs="?", metavar="DIR", help="directory to wich articles will be downloaded", default=environ["HOME"] + "/.rssr/articles/")
+args = parser.parse_args()
+
+chdir(args.directory)
+
+webs = rssr.feeds_get(open(args.feeds, "r").readlines())
+
+for web in webs:
+    for entry in web["entries"]:
+        published = rssr.rss_strftime("%F %H:%M", entry["published"])
+
+        artf = open("{} {}".format(published, entry["title"]), "w")
+        
+        if args.verbose: print(published, entry["title"])
+        
+        artr = requests.get(entry["links"][0]["href"])
+        if not artr.ok:
+            raise Exception("Not OK response {}".format(artr.url))
+        
+        html = rssr.html2text(artr.content.decode(artr.encoding))
+        artf.write("<html>\n<meta charset=utf-8>\n" + html[html.find("h1") - 1:] + "</html>")
+        artf.close()

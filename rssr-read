@@ -1,0 +1,20 @@
+#! /usr/bin/python3
+
+import argparse
+from rssr import htmlls
+from os import system, remove, getcwd, environ
+from os.path import basename
+from string import Template
+from shutil import copyfile
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-t", "--template", dest="template", metavar="TEMPLATE", help="html template for the article index", default=environ["HOME"] + "/.rssr/rssr.html")
+parser.add_argument("-c", "--cmd", dest="cmd", metavar="CMD", help="command for opening articles", default="surf -p -s")
+parser.add_argument("directory", nargs="?", metavar="DIR", help="directory with articles", default=environ["HOME"] + "/.rssr/articles/")
+args = parser.parse_args()
+
+temp = Template(open(args.template, "r").read())
+open("/tmp/" + basename(args.template), "w").write(temp.substitute(index=htmlls(args.directory, reverse=True)))
+
+system(args.cmd + " /tmp/" + basename(args.template))
+remove("/tmp/" + basename(args.template))
