@@ -17,7 +17,7 @@ Dependecies
  * python3
  * python3-feedparser
  * python3-lxml
- * surf (only by default, you can use any web browser you want, just run `rss-read` with `-c YOUR_WEB_BROWSER`, also write this to the `rss` shell script)
+ * surf (only by default, you can use any web browser you want, just run `rss-read` with `-c [YOUR_WEB_BROWSER]`, also write this to the `rss` shell script)
 
 Cron
 ----
@@ -39,10 +39,10 @@ Save and close and your done. From this moment cron will execute `rssr-pull` eve
 Feeds
 -----
 
-Feeds are in `~/.rssr/feeds`.
+Feeds urls are in `~/.rssr/feeds`.
 
 Adding a new feed is pretty simple:
 
 ```sh
-echo FEED_URL >> ~/.rssr/feeds
+echo [FEED_URL] >> ~/.rssr/feeds
 ```
