@@ -17,12 +17,12 @@ Dependecies
  * python3
  * python3-feedparser
  * python3-lxml
- * surf (only by default, you can use any web browser you want, just run `rss-read -c YOUR_WEB_BROWSER`, also write this to the `rss` shell script)
+ * surf (only by default, you can use any web browser you want, just run `rss-read` with `-c YOUR_WEB_BROWSER`, also write this to the `rss` shell script)
 
 Cron
 ----
 
-If you want to pull new articles from your feeds, use cron:
+If you want to pull new articles from your feeds automaticly, you can use cron:
 
 ```sh
 crontab -e
@@ -34,7 +34,7 @@ An editor should open. Jump to the end and write:
 0 0,4,8,12,16,20 * * * /usr/bin/rssr-pull
 ```
 
-Close the editor and your done. From this moment cron will execute `rssr-pull` every four hours.
+Save and close and your done. From this moment cron will execute `rssr-pull` every four hours.
 
 Feeds
 -----
