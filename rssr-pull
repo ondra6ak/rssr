@@ -2,8 +2,9 @@
 
 import requests
 import rssr
-from os import chdir, environ
 import argparse
+from os import chdir, environ
+from time import strftime
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--feeds", dest="feeds", metavar="FEEDS", help="file with individual urls", default=environ["HOME"] + "/.rssr/feeds")
@@ -17,16 +18,19 @@ webs = rssr.feeds_get(open(args.feeds, "r").readlines())
 
 for web in webs:
     for entry in web["entries"]:
-        published = rssr.rss_strftime("%F %H:%M", entry["published"])
+        try: published = strftime("%F %H:%M", entry["published_parsed"])
+        except KeyError: published = strftime("%F %H:%M", entry["updated_parsed"])
 
-        artf = open("{} {}".format(published, entry["title"]), "w")
+        artf = open("{} {}: {}".format(published, web["feed"]["title"], entry["title"]).replace("/", ""), "w")
         
-        if args.verbose: print(published, entry["title"])
+        if args.verbose: print("{} {}: {}".format(published, web["feed"]["title"], entry["title"]).replace("/", ""))
         
         artr = requests.get(entry["links"][0]["href"])
         if not artr.ok:
             raise Exception("Not OK response {}".format(artr.url))
         
         html = rssr.html2text(artr.content.decode(artr.encoding))
-        artf.write("<html>\n<meta charset=utf-8>\n" + html[html.find("h1") - 1:] + "</html>")
+        beg = html.find("<h1")
+        if beg < 0: beg = 0
+        artf.write("<html>\n<meta charset=utf-8>\n" + html[beg:] + "</html>")
         artf.close()

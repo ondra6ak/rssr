@@ -1,6 +1,5 @@
 import feedparser
 from lxml.html.clean import Cleaner
-from time import strftime, strptime
 from os import listdir, chdir, getcwd
 from os.path import abspath
 
@@ -25,6 +24,10 @@ def html2text(html, allowed_tags=["a", "abbr", "article", "aside",
     cleaner = Cleaner()
     cleaner.allow_tags = allowed_tags
     cleaner.remove_unknown_tags = False
+    cleaner.page_structure = False
+    cleaner.meta = False
+    cleaner.style = True
+    cleaner.embeded = False
     return cleaner.clean_html(html)
 
 def feeds_get(feeds):
@@ -32,12 +35,6 @@ def feeds_get(feeds):
     for feed in feeds:
         feedsr.append(feedparser.parse(feed))
     return feedsr
-
-def rss_strftime(strf, strp):
-    try:
-        return strftime(strf, strptime(strp, "%a, %d %b %Y %H:%M:%S %z"))
-    except ValueError:
-        return strftime(strf, strptime(strp, "%a, %d %b %Y %H:%M:%S %Z"))
 
 def htmlls(directory, reverse=False):
     basedir = getcwd()
