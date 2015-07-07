@@ -2,6 +2,7 @@
 
 import requests
 import rssr
+import feedparser
 import argparse
 from os import chdir, environ
 from time import strftime
@@ -14,22 +15,22 @@ args = parser.parse_args()
 
 chdir(args.directory)
 
-webs = rssr.feeds_get(open(args.feeds, "r").readlines())
+for url in open(args.feeds, "r").readlines():
+    feed = feedparser.parse(url)
 
-for web in webs:
-    for entry in web["entries"]:
+    for entry in feed["entries"]:
         try: published = strftime("%F %H:%M", entry["published_parsed"])
         except KeyError: published = strftime("%F %H:%M", entry["updated_parsed"])
-
-        artf = open("{} {}: {}".format(published, web["feed"]["title"], entry["title"]).replace("/", ""), "w")
         
-        if args.verbose: print("{} {}: {}".format(published, web["feed"]["title"], entry["title"]).replace("/", ""))
+        filename = "{} {}: {}".format(published, feed["feed"]["title"], entry["title"]).replace("/", "")
+        artf = open(filename, "w")
+        if args.verbose: print(filename)
         
         artr = requests.get(entry["link"])
         if not artr.ok:
             raise Exception("Not OK response {}".format(artr.url))
         
-        html = rssr.html2text(artr.content).decode(artr.encoding)
+        html = rssr.html2content(artr.content).decode(artr.encoding)
         beg = html.find("<h1")
         if beg < 0: beg = 0
         artf.write("<html>\n<meta charset=utf-8>\n" + html[beg:] + "</html>")
