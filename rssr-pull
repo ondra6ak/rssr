@@ -25,7 +25,7 @@ for web in webs:
         
         if args.verbose: print("{} {}: {}".format(published, web["feed"]["title"], entry["title"]).replace("/", ""))
         
-        artr = requests.get(entry["links"][0]["href"])
+        artr = requests.get(entry["link"])
         if not artr.ok:
             raise Exception("Not OK response {}".format(artr.url))
         
