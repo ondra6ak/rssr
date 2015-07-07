@@ -29,7 +29,7 @@ for web in webs:
         if not artr.ok:
             raise Exception("Not OK response {}".format(artr.url))
         
-        html = rssr.html2text(artr.content.decode(artr.encoding))
+        html = rssr.html2text(artr.content).decode(artr.encoding)
         beg = html.find("<h1")
         if beg < 0: beg = 0
         artf.write("<html>\n<meta charset=utf-8>\n" + html[beg:] + "</html>")
