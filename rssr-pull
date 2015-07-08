@@ -4,7 +4,7 @@ import requests
 import rssr
 import feedparser
 import argparse
-from os import chdir, environ
+from os import chdir, environ, listdir
 from time import strftime
 
 parser = argparse.ArgumentParser()
@@ -22,16 +22,18 @@ for url in open(args.feeds, "r").readlines():
         try: published = strftime("%F %H:%M", entry["published_parsed"])
         except KeyError: published = strftime("%F %H:%M", entry["updated_parsed"])
         
-        filename = "{} {}: {}".format(published, feed["feed"]["title"], entry["title"]).replace("/", "")
-        artf = open(filename, "w")
-        if args.verbose: print(filename)
+        filename = "{} {}: {}".format(published, feed["feed"]["title"], entry["title"]).replace("/", "").replace("?", "")         
         
-        artr = requests.get(entry["link"])
-        if not artr.ok:
-            raise Exception("Not OK response {}".format(artr.url))
-        
-        html = rssr.html2content(artr.content).decode(artr.encoding)
-        beg = html.find("<h1")
-        if beg < 0: beg = 0
-        artf.write("<html>\n<meta charset=utf-8>\n" + html[beg:] + "</html>")
-        artf.close()
+        if filename not in listdir():               
+            artr = requests.get(entry["link"])
+            
+            if artr.ok: 
+                if args.verbose: print(filename)
+
+                html = rssr.html2content(artr.content).decode(artr.encoding)
+                beg = html.find("<h1")
+                if beg < 0: beg = 0
+ 
+                open(filename, "w").write("<html>\n<meta charset=utf-8>\n" + html[beg:] + "</html>")
+            else:
+                if args.verbose: print("ERROR", artr.status_code, artr.url)
