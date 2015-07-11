@@ -34,6 +34,6 @@ for url in open(args.feeds, "r").readlines():
                 beg = html.find("<h1")
                 if beg < 0: beg = 0
  
-                open(filename, "w").write("<html>\n<meta charset=utf-8>\n" + html[beg:] + "</html>")
+                open(filename, "w").write("<html>\n<meta charset={}>\n{}\n</html>".format(artr.encoding, html[beg:]))
             else:
                 if args.verbose: print("ERROR", artr.status_code, artr.url)
