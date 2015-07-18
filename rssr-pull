@@ -16,6 +16,7 @@ args = parser.parse_args()
 chdir(args.directory)
 
 for url in open(args.feeds, "r").readlines():
+    if args.verbose: print(url.replace("\n", ""))
     feed = feedparser.parse(url)
 
     for entry in feed["entries"]:
