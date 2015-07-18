@@ -30,10 +30,10 @@ for url in open(args.feeds, "r").readlines():
             if artr.ok: 
                 if args.verbose: print(filename)
 
-                html = rssr.html2content(artr.content).decode(artr.encoding)
+                html = rssr.html2content(artr.content).decode(artr.encoding or "utf-8")
                 beg = html.find("<h1")
                 if beg < 0: beg = 0
  
-                open(filename, "w").write("<html>\n<meta charset={}>\n{}\n</html>".format(artr.encoding, html[beg:]))
+                open(filename, "w").write("<html>\n<meta charset={}>\n{}\n</html>".format(artr.encoding or "utf-8", html[beg:]))
             else:
                 if args.verbose: print("ERROR", artr.status_code, artr.url)
