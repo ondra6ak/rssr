@@ -6,6 +6,7 @@ import feedparser
 import argparse
 from os import chdir, environ, listdir
 from time import strftime
+from sys import exc_info
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--feeds", dest="feeds", metavar="FEEDS", help="file with individual urls", default=environ["HOME"] + "/.rssr/feeds")
@@ -26,15 +27,18 @@ for url in open(args.feeds, "r").readlines():
         filename = "{} {}: {}".format(published, feed["feed"]["title"], entry["title"]).replace("/", "").replace("?", "")         
         
         if filename not in listdir():               
-            artr = requests.get(entry["link"])
+            try:
+                artr = requests.get(entry["link"]) 
             
-            if artr.ok: 
-                if args.verbose: print(filename)
+                if artr.ok: 
+                    if args.verbose: print(filename)
 
-                html = rssr.html2content(artr.content).decode(artr.encoding or "utf-8")
-                beg = html.find("<h1")
-                if beg < 0: beg = 0
+                    html = rssr.html2content(artr.content).decode(artr.encoding or "utf-8")
+                    beg = html.find("<h1")
+                    if beg < 0: beg = 0
  
-                open(filename, "w").write("<html>\n<meta charset={}>\n{}\n</html>".format(artr.encoding or "utf-8", html[beg:]))
-            else:
-                if args.verbose: print("ERROR", artr.status_code, artr.url)
+                    open(filename, "w").write("<html>\n<meta charset={}>\n{}\n</html>".format(artr.encoding or "utf-8", html[beg:]))
+                else:
+                    if args.verbose: print("ERROR", artr.status_code, artr.url)
+            except ConnectionRefusedErorr: 
+                if args.verbose: print("ERROR", entry["link"])
